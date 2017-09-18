@@ -1,12 +1,28 @@
 language: python
-sudo: false
+
 python:
   - "2.7"
+
+before_install:
+     # add for profile
+    - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+    - sudo apt-get update -qq
+
+
 install:
-  - source cfg4dev
-  - pip install coveralls
+  # add for profile
+    - sudo apt-get install -qq g++-4.8
+    - export CXX="g++-4.8"
+    - pip install nose-cprof
+    - pip install properform
+   - source cfg4dev
+   - pip install coveralls
 script:
   - python setup.py sdist --formats=gztar
-  - nosetests --with-coverage --cover-branches --cover-erase --cover-package yar
+  - nosetests --with-coverage --cover-branches --cover-erase --cover-package yar --with-cprofile --cprofile-stats-erase --cprofile-stats-file=profile_yar_49d3439283_0
+  - python -m properform Push 47.88.50.110:15554 asdf_yar_49d3439283_0 ./profile_yar_49d3439283_0
+
+
 after_success:
   - coveralls || true
+ #2017-09-18 12:48:09 modified at 0
